@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 //secret key import
-const secretKey = require('../config/secretKey').secretAccessKey;
+const secretKey = require('../config/secretKey').jwtSecret;
 
 module.exports = {
 
@@ -14,7 +14,7 @@ module.exports = {
 
         //페이로드
         const payload = {
-            _id : id
+            id : id
         };
 
         //토큰 생성
