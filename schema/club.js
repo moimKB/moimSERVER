@@ -8,9 +8,7 @@ let clubSchema = new Schema({
     club_open : Number,
     club_background : String,
     club_logo : String,
-    club_explanation : String,
-    notice : Array,
-    user : String
+    club_explanation : String
 },{
     versionKey:false
 });
