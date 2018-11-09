@@ -15,6 +15,7 @@ router.post('/',async(req,res,next)=>{
     await user.create({
         user_id : req.body.user_id,
         user_name : req.body.user_name,
+        user_salt : salt.toString('base64'),
         user_pw : hashedpw.toString('base64'),
         user_phone : req.body.user_phone,
         user_sex : req.body.user_sex,

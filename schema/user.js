@@ -5,6 +5,7 @@ let userSchema = new Schema({
     user_id : String,
     user_pw : String,
     user_name : String,
+    user_salt : String,
     user_phone : String,
     user_sex : Number,
     user_birth : Date,
