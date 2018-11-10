@@ -12,7 +12,8 @@ let userSchema = new Schema({
     user_univ : String,
     user_major : String,
     user_account : {type : String, default : null},
-    user_bank :{type : String, default : null}
+    user_bank :{type : String, default : null},
+    user_deviceToken : {type : String, default : null}
 },{
     versionKey:false
 });
