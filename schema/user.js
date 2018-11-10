@@ -10,7 +10,9 @@ let userSchema = new Schema({
     user_sex : Number,
     user_birth : Date,
     user_univ : String,
-    user_major : String
+    user_major : String,
+    user_account : {type : String, default : null},
+    user_bank :{type : String, default : null}
 },{
     versionKey:false
 });
