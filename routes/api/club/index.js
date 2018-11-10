@@ -12,6 +12,9 @@ const user = require('../../../schema/user');
 const searchRouter = require('./search');
 router.use('/search',searchRouter);
 
+//notice 라우터
+const noticeRouter = require('./notice');
+router.use('/notice',noticeRouter);
 
 /* GET home page. */
 router.get('/', async (req, res, next) => {
@@ -33,6 +36,7 @@ router.get('/', async (req, res, next) => {
             }
             console.log(output)
             let temp = {
+                club_id : output[0]._id,
                 club_name : output[0].club_name,
                 club_logo : output[0].club_logo,
                 club_manager : output[0].club_manager,

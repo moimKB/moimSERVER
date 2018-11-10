@@ -32,6 +32,10 @@ router.post('/', async(req,res,next)=>{
             message:"Success to Signin",
             token : token
             });
+        }else{
+            res.status(400).send({
+                message:"Fail to signin"
+            })
         }
 })
 
