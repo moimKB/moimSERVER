@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 let noticeSchema = new Schema({
     club_id : String,
     write_time : Date,
+    club_manager : String,
     notice_title : String,
     notice_category : Number,
     notice_place : String,

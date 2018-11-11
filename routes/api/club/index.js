@@ -172,6 +172,67 @@ router.get('/detail',async(req,res,next)=>{
 
 
 });
+router.post('/join',async(req,res,next)=>{
+    let clubId = req.body.club_id;
+    let token = req.headers.token;
+    let decoded = jwt.verify(token);
+
+    if(!clubId || !token){
+        res.status(400).send({
+            message:"Null value"
+        });
+        
+        return false;
+    }
+    if(decoded === -1){
+        res.status(400).send({
+            message:"token error"
+        })
+        
+        return false;
+    };
+    let checkPeople = await position.find({
+        club_id : clubId,
+        user_id : decoded.id
+    })
+    if(checkPeople.length > 0){
+        res.status(400).send({
+            message : "Already Exists"
+        })
+        return false;
+
+    }
+
+    await position.create({
+        club_id : clubId,
+        user_id : decoded.id,
+        position_category : 1
+    },
+    function(err,output){
+        if(err){
+            res.status(500).send({
+                message:"Internal Server Error"
+            })
+            
+        return false;
+        }
+    });// position 컬랙션 가입자 추가
+
+    club.updateOne({_id : clubId},
+        {$inc : {club_count:1}},
+        function(err,output){
+            if(err){
+                res.status(500).send({
+                    message:"Internal Server Error"
+                })
+                
+        return false;
+            }
+    });// 카운트 수 +1 업데이트
+    res.status(200).send({
+        message:"Success to enter club"
+    })
+});
 
 
 

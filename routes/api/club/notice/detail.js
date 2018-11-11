@@ -7,6 +7,13 @@ const moment = require('moment');
 
 
 router.get('/', async(req, res, next) => {
+    let noticeId = req.query.notice_id;
+    let output = await notice.find(
+        {_id : noticeId})
+        console.log(output[0].notice_people.length);
+    let data ={
+        
+    }
 
 });
 
