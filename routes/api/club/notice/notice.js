@@ -1,8 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('../../../module/jwt');
-const club = require('../../../schema/club');
-const notice = require('../../../schema/notice');
+const jwt = require('../../../../module/jwt');
+const club = require('../../../../schema/club');
+const notice = require('../../../../schema/notice');
+
+//detail라우터
+const detailRouter = require('./detail');
+router.use('/detail',detailRouter);
+
+
 
 
 router.get('/', async (req,res,next)=>{

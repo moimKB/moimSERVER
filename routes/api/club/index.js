@@ -15,8 +15,9 @@ const searchRouter = require('./search');
 router.use('/search',searchRouter);
 
 //notice 라우터
-const noticeRouter = require('./notice');
+const noticeRouter = require('./notice/notice');
 router.use('/notice',noticeRouter);
+
 
 /* GET home page. */
 router.get('/', async (req, res, next) => {
