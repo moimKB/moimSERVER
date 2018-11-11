@@ -42,8 +42,6 @@ router.get('/', async(req, res, next) => {
         message:"success to show detail notice",
         data : data
     });
-
-
 });
 
 
