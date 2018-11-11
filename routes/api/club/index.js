@@ -6,6 +6,8 @@ const club = require('../../../schema/club')
 const position = require('../../../schema/position');
 const crypto = require('crypto-promise');
 const user = require('../../../schema/user');
+const notice = require('../../../schema/notice');
+const moment = require('moment');
 
 
 //search 라우터
@@ -107,6 +109,65 @@ router.post('/', upload.fields([{name : 'club_logo', maxCount : 1}, {name : 'clu
                 
             }
         });
+});
+router.get('/detail',async(req,res,next)=>{
+    let clubIdx = req.query.club_id;
+    let cluboutput = await club.find({_id : clubIdx});
+    let temp;
+    let dataArray = new Array;
+    if(!cluboutput){
+        res.status(500).send({
+            message:"Internal Server Error"
+        })
+    }
+
+    let clubData = {
+        club_id : cluboutput[0]._id,
+        club_logo : cluboutput[0].club_log,
+        club_background : cluboutput[0].club_background,
+        club_title : cluboutput[0].club_title,
+        club_explanation : cluboutput[0].club_explanation
+    }
+
+    let noticeoutput = await notice.find({club_id : clubIdx}).sort({"write_time":1});
+    if(!noticeoutput){
+        res.status(500).send({
+            message : "Internal Server Error"
+        })
+    }
+    let noticeTotalData ={
+        notice_title : noticeoutput[0].notice_title,
+        notice_content : noticeoutput[0].notice_content,
+        notice_category : noticeoutput[0].notice_category,
+        notice_id : noticeoutput[0]._id
+    }
+
+    let noticeoutput2 = await notice.find({$and:[{club_id : clubIdx},
+        {notice_date:{$gte:new Date(moment().format())}}]}).sort({"notice_date":-1});
+    let day = new Date(noticeoutput2[0].notice_date)
+    
+    
+    let data2 =  {
+        notice_title : noticeoutput2[0].notice_title,
+        notice_date : noticeoutput2[0].notice_date,
+        notice_time : noticeoutput2[0].notice_time,
+        notice_day : day.getDay()
+    }
+    
+
+    if(!noticeoutput2){
+        res.status(500).send({
+            message :"Internal Server Error"
+        })
+    }
+    res.status(200).send({
+        message:"Success to showing club Detail",
+        data : {
+            clubInfo : clubData,
+            noticeschedule : data2,
+            totalNotice : noticeTotalData
+        }
+    })
 
 
 });

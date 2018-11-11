@@ -21,7 +21,7 @@ router.get('/', async (req,res,next)=>{
         notice_title : true,
         notice_content :true,
         _id : true
-    });
+    }).sort({"write_time":1});
     if(!result){
         res.status(500).send({
             message:"Internal Server Error"

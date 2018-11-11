@@ -7,7 +7,7 @@ let noticeSchema = new Schema({
     notice_title : String,
     notice_category : Number,
     notice_place : String,
-    notice_date : String,
+    notice_date : Date,
     notice_time : String,
     notice_content : String,
     notice_people : Array
