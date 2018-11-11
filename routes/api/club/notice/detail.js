@@ -3,10 +3,11 @@ const router = express.Router();
 const jwt = require('../../../../module/jwt');
 const club = require('../../../../schema/club');
 const notice = require('../../../../schema/notice');
+const moment = require('moment');
 
 
-router.get('/', (req, res, next) => {
-    res.render('index', { title: 'Express' });
+router.get('/', async(req, res, next) => {
+
 });
 
 

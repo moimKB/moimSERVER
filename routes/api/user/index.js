@@ -15,7 +15,7 @@ router.use('/signin',SigninRouter);
 router.get('/', (req, res, next) => {
   res.render('index', { title: 'Express' });
 });
-router.post('/account',async (req,res,next)=>{
+router.put('/account',async (req,res,next)=>{
   let account = req.body.user_account;
   let bank = req.body.user_bank;
   let token = req.headers.token;
