@@ -8,6 +8,11 @@ router.use('/user',userRouter);
 const clubRouter = require('./club/index');
 router.use('/club',clubRouter);
 
+//푸쉬 라우터
+const pushRouter = require('./push/push');
+router.use('/push',pushRouter);
+
+
 /* GET home page. */
 router.get('/', (req, res, next) => {
   res.render('index', { title: 'Express' });
