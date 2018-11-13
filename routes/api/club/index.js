@@ -37,6 +37,7 @@ router.get('/', async (req, res, next) => {
                 res.status(500).send({
                     message:"Internal Server Error"
                 });
+                return false;
             }
             console.log(output)
             let temp = {
@@ -54,6 +55,7 @@ router.get('/', async (req, res, next) => {
                 message:"Internal Server Error"
             })
         }else{
+            console.log("1234");
             res.status(200).send({
                 message:"success to show myclubList",
                 data : data

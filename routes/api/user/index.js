@@ -36,7 +36,7 @@ router.put('/account',async (req,res,next)=>{
     })
   }
 
-  await user.update({_id:decoded.id},{
+  await user.updateOne({_id:decoded.id},{
     user_account : account,
     user_bank  : bank
   },async function(err, output){

@@ -8,7 +8,7 @@ let noticeSchema = new Schema({
     write_time : Date,
     club_manager : String,
     notice_title : String,
-    notice_cost : Number,
+    notice_cost : {type : Number, default : 0 },
     notice_category : Number,
     notice_place : String,
     notice_date : Date,
