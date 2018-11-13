@@ -8,9 +8,9 @@ router.use('/user',userRouter);
 const clubRouter = require('./club/index');
 router.use('/club',clubRouter);
 
-//푸쉬 라우터
-const pushRouter = require('./push/push');
-router.use('/push',pushRouter);
+//계좌 라우터
+const accountRouter = require('./account/account');
+router.use('/account',accountRouter);
 
 
 /* GET home page. */

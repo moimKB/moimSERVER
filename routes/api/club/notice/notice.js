@@ -55,6 +55,7 @@ router.post('/',async(req,res,next)=>{
         });
         return false;
     }
+    //토큰 에러처리
     let decoded = jwt.verify(token);
     if(decoded === -1){
         res.status(400).send({
@@ -63,27 +64,53 @@ router.post('/',async(req,res,next)=>{
         return false;
     }
 
+    //똑같은 사람이 또 신청했을 때 분기처리
+    let checkResult = await notice.find({_id : noticeId},{notice_people : true});
+    console.log(checkResult)
+    let people = new Array;
+
+    people = Array.from( checkResult[0].notice_people
+    )
+        console.log(people)
+    for(let i = 0 ; people.length; i++){
+        if(decoded.id === people[i].user_id){
+            console.log(1);
+            res.status(400).send({
+                message:"Already Exists"
+            });
+            return false;
+        }
+    }
+
+    
+
+
+    //유저 데이터를 넣기 위한 가공
     let output = await user.find({
         _id : decoded.id
-    },{user_name : true});
+    },{user_name : true, user_deviceToken:true});
 
 
     if(!output){
         res.status(500).send({
             message:"Internal Server Error"
         })
+        return false;
     }
 
+    //보낼 데이터 가공
     let data = {
         user_name : output[0].user_name,
         user_id : decoded.id,
         current_time : new Date(moment().format()),
-        account_check : 0
+        account_check : 0,
+        user_deviceToken : output[0].user_deviceToken
     }
 
-    console.log(data);
+    //console.log(data);
 
-    await notice.update({_id :noticeId},
+    // 공지에 사람 추가해서 업데이트
+    await notice.updateOne({_id :noticeId},
         {$push : {notice_people:data}},
     async function(err, outputs){
         if(err){
@@ -109,6 +136,7 @@ router.post('/add',async(req,res,next)=>{
         res.status(500).send({
             message:"Internal Server Error"
         })
+        return false;
     }
     
     notice.create({
