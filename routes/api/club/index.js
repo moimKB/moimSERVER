@@ -28,7 +28,8 @@ router.get('/', async (req, res, next) => {
     await position.find({
         user_id : decoded.id
     },async function( err,outputs){
-        //console.log(outputs)
+
+
         
         for(let i=0; i<outputs.length;i++){
             output = await club.find({_id : outputs[i].club_id});
@@ -83,7 +84,8 @@ router.post('/', upload.fields([{name : 'club_logo', maxCount : 1}, {name : 'clu
             club_logo : req.files["club_logo"][0].location,
             club_explanation : req.body.club_explanation,
             club_manager : userName,
-            club_count : 1
+            club_count : 1,
+            user_id : decoded.id
         },
         async function(err, outputs){
             if(err){
@@ -113,6 +115,26 @@ router.post('/', upload.fields([{name : 'club_logo', maxCount : 1}, {name : 'clu
 });
 router.get('/detail',async(req,res,next)=>{
     let clubIdx = req.query.club_id;
+    let token = req.headers.token;
+    
+    let decoded = jwt.verify(token);
+
+    let user_position;
+    let club_check;
+    
+    let checkOutput = await position.find(
+        {$and:[{user_id :decoded.id},{club_id : clubIdx}]});
+
+    if(checkOutput.length===0){//가입 안한 사람
+        club_check = 0;
+        user_position = null;
+    }else{
+        club_check = 1;
+        user_position = checkOutput[0].position_category;
+
+    }
+
+
     let cluboutput = await club.find({_id : clubIdx});
     let temp;
     let dataArray = new Array;
@@ -136,23 +158,50 @@ router.get('/detail',async(req,res,next)=>{
             message : "Internal Server Error"
         })
     }
-    let noticeTotalData ={
-        notice_title : noticeoutput[0].notice_title,
-        notice_content : noticeoutput[0].notice_content,
-        notice_category : noticeoutput[0].notice_category,
-        notice_id : noticeoutput[0]._id
+
+    let noticeTotalData
+    if(noticeoutput.length === 0){
+        noticeTotalData ={
+            notice_title : null,
+            notice_content : null,
+            notice_category : null,
+            notice_id : null
+        }
+
+    }else{
+        noticeTotalData ={
+            notice_title : noticeoutput[0].notice_title,
+            notice_content : noticeoutput[0].notice_content,
+            notice_category : noticeoutput[0].notice_category,
+            notice_id : noticeoutput[0]._id
+        }
+
     }
 
     let noticeoutput2 = await notice.find({$and:[{club_id : clubIdx},
         {notice_date:{$gte:new Date(moment().format())}}]}).sort({"notice_date":-1});
-    let day = new Date(noticeoutput2[0].notice_date)
-    
-    
-    let data2 =  {
-        notice_title : noticeoutput2[0].notice_title,
-        notice_date : noticeoutput2[0].notice_date,
-        notice_time : noticeoutput2[0].notice_time,
-        notice_day : day.getDay()
+        let data2;
+        let day;
+    if(noticeoutput2.length ===0){
+        data2 =  {
+            notice_title : null,
+            notice_date : null,
+            notice_time : null,
+            notice_day : null
+        }
+
+    }else{
+        day = new Date(noticeoutput2[0].notice_date)
+        data2 =  {
+            notice_title : noticeoutput2[0].notice_title,
+            notice_date : noticeoutput2[0].notice_date,
+            notice_time : noticeoutput2[0].notice_time,
+            notice_day : day.getDay()
+        }
+    }
+    let user_data = {
+        club_checking : club_check,
+        user_position : user_position
     }
     
 
@@ -166,7 +215,8 @@ router.get('/detail',async(req,res,next)=>{
         data : {
             clubInfo : clubData,
             noticeschedule : data2,
-            totalNotice : noticeTotalData
+            totalNotice : noticeTotalData,
+            user_data : user_data
         }
     })
 

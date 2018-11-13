@@ -4,10 +4,13 @@ const jwt = require('../../../../module/jwt');
 const club = require('../../../../schema/club');
 const notice = require('../../../../schema/notice');
 const moment = require('moment');
+const position = require('../../../../schema/position');
 
 
 router.get('/', async(req, res, next) => {
     let noticeId = req.query.notice_id;
+    let token = req.headers.token;
+    
     let output = await notice.find(
         {_id : noticeId});
     if(!output){

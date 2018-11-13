@@ -100,4 +100,42 @@ router.post('/',async(req,res,next)=>{
 
 });
 
+router.post('/add',async(req,res,next)=>{
+
+    let token = req.headers.token;
+    let decoded = jwt.verify(token);
+    let resultName = await user.find({_id:decoded.id},{user_name : true})
+    if(!resultName){
+        res.status(500).send({
+            message:"Internal Server Error"
+        })
+    }
+    
+    notice.create({
+        club_id : req.body.club_id,
+        write_time : new Date(moment().format()),
+        club_manager : resultName[0].user_name ,
+        notice_title : req.body.notice_title,
+        notice_cost : req.body.notice_cost,
+        notice_category : req.body.notice_category,
+        notice_place : req.body.notice_place,
+        notice_date : req.body.notice_date,
+        notice_time : req.body.notice_time,
+        notice_content : req.body.notice_content
+    },function(err, output){
+        if(err){
+            console.log(err)
+            res.status(500).send({
+                message:"Internal Server Error"
+            });
+        }else{
+            res.status(201).send({
+                message : "Success to write notice(event)"
+            })
+        }
+    });
+
+});
+
+
 module.exports = router;

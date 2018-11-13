@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+// 모먼트 설정
+const moment = require('moment');
 
 let noticeSchema = new Schema({
     club_id : String,
@@ -12,7 +14,7 @@ let noticeSchema = new Schema({
     notice_date : Date,
     notice_time : String,
     notice_content : String,
-    notice_people : Array
+    notice_people :  {type : Array, default : null}
 },{
     versionKey:false
 });
