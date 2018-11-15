@@ -117,12 +117,13 @@ router.post('/',async(req,res,next)=>{
             res.status(500).send({
                 message :"Internal Server Error"
             });
-        }
+        }else{
+            res.status(201).send({
+            message:"success to apply event(notice)"
+        })}
     }
     );
-    res.status(201).send({
-        message:"success to apply event(notice)"
-    })
+    
     
 
 });

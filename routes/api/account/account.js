@@ -5,6 +5,7 @@ const jwt = require('../../../module/jwt');
 const notice = require('../../../schema/notice');
 const position = require('../../../schema/position');
 const account = require('../../../schema/account');
+const club = require('../../../schema/club')
 const moment = require('moment');
 const FCM = require('fcm-node');
 
@@ -87,41 +88,107 @@ router.post('/',async(req,res,next)=>{
     }
 });
 
-
+//송금보내기
 router.post('/transfer',async (req,res,next)=>{
     let token = req.headers.token;
     let noticeId = req.body.notice_id;
-    let noticePrice = req.body.notice_price;
-
+    //account 바꿔주기, 송금 여부 바꿔주기
     let decoded = jwt.verify(token);
 
     if(!token || !noticeId){
         res.status(400).send({
             message:"Null Value"
         });
+        return false
     }
     if(decoded === -1){
         res.status(400).send({
             message : "token error"
         })
+        return false
     }
-    let userName;
-    await user.find({_id : decoded.id},{user_name:true},
-    async function(err,outputs){
-        userName = outputs[0].user_name
+    // 토큰 에러처리
 
+    let clubId;
+    let club_bank;
+    let club_account;
+    let user_id;
+
+    await notice.find({_id : noticeId},{club_id : true},
+        async function(err,outputs){
+        if(err){
+            res.status(500).send({
+                message : "Internal Server Error"
+            });
+        }
+            clubId = outputs[0].club_id;
     });
+
+    await club.find({_id : clubId},
+        { user_id : true},
+        async function(err,outputs){
+            if(err){
+                res.status(500).send({
+                    message : "Internal Server Error"
+                });
+            }
+        console.log(outputs)
+        user_id = outputs[0].user_id;
+        });
+    let userName;
+
+    await user.find({_id : decoded.id},{user_name : true},
+        async function(err,outputs){
+            if(err){
+                res.status(500).send({
+                    message : "Internal Server Error"
+                });
+            }
+            console.log(11);
+            userName = outputs[0].user_name
+        }
+    );
     
-    /*await account.create({
-        write_time : new Date(moment().format()),
-        deposit : ,
-        withdraw : ,
-    })*/
-
-
-
-
-
+    await account.create({
+        price : req.body.notice_price,
+        bank : club_bank,
+        account_number : club_account,
+        account_content : userName,
+        to_user_id : user_id,
+        from_user_id : decoded.id,
+        club_id : clubId
+    },async function(err, outputs){
+        if(err){
+            res.status(500).send({
+                message : "Internal Server Error"
+            });
+            console.log(1);
+        }
+        console.log(1);
+    });// 계좌 내역 등록
+    
+    //송금 확인 체크
+    let output12 = await notice.find({_id :noticeId});
+    let noticePeo = output12[0].notice_people;
+    for(let i = 0 ; i < noticePeo.length;i++){
+        if(noticePeo[i].user_id === decoded.id){
+            noticePeo[i].account_check = 1;
+        }
+    }
+    await notice.updateOne({_id :noticeId},
+        {$set : {notice_people : noticePeo}},
+    async function(err, outputs){
+        if(err){
+            res.status(500).send({
+                message : "Internal Server Error"
+            });
+        }else{
+            console.log(outputs)
+            res.status(201).send({
+                message:"Success to send money"
+            });
+        }
+    });
 
 });
 

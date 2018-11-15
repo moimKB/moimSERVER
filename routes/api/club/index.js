@@ -7,6 +7,8 @@ const position = require('../../../schema/position');
 const crypto = require('crypto-promise');
 const user = require('../../../schema/user');
 const notice = require('../../../schema/notice');
+const account = require('../../../schema/account');
+const account_info = require('../../../schema/account_info');
 const moment = require('moment');
 
 
@@ -70,6 +72,7 @@ router.get('/', async (req, res, next) => {
 router.post('/', upload.fields([{name : 'club_logo', maxCount : 1}, {name : 'club_background', maxCount : 1}]),
     async (req,res,next)=>{
         
+        
         let token = req.headers.token;
         let decoded = jwt.verify(token);
         let clubIdx;
@@ -77,9 +80,10 @@ router.post('/', upload.fields([{name : 'club_logo', maxCount : 1}, {name : 'clu
         await user.find({ _id : decoded.id },
         async function(err,outputs){
             userName = outputs[0].user_name;
-            console.log(outputs)
+            //console.log(outputs)
         });
-
+        console.log(req.files);
+        
         await club.create({
             club_name : req.body.club_name,
             club_background : req.files["club_background"][0].location,
@@ -95,25 +99,39 @@ router.post('/', upload.fields([{name : 'club_logo', maxCount : 1}, {name : 'clu
                     message : "Internal Server Error"
                 })
             }else{
-                console.log(outputs._id);
+                //console.log(outputs._id);
                 clubIdx = outputs._id;
-                position.create({
+                await position.create({
                     user_id : decoded.id,
                     club_id : clubIdx,
                     position_category : 0
-                },function(err,results){
+                },async function(err,results){
                     if(err){
                         res.status(500).send({
                             message : "Internal Server Error"
-                        })
+                        });
                     }
-                    res.status(201).send({
-                        message : "Success to create club"
-                    })
-                })
-                
-            }
-        });
+                });
+                // 계좌 추가
+                await account_info.create({
+                    club_id : clubIdx,
+                    account_bank : req.body.bank_name,
+                    account_number : req.body.bank_account,
+                    user_id : decoded.id
+                },
+                async function(err,results){
+                    if(err){
+                        res.status(500).send({
+                            message:"Internal Server Error"
+                        });
+                    }else{
+                        res.status(201).send({
+                            message:"success to create club"
+                        });
+                    }
+                });
+        }
+    });
 });
 router.get('/detail',async(req,res,next)=>{
     let clubIdx = req.query.club_id;
@@ -130,7 +148,7 @@ router.get('/detail',async(req,res,next)=>{
     if(checkOutput.length===0){//가입 안한 사람
         club_check = 0;
         user_position = null;
-    }else{
+    }else{//가입한 사람
         club_check = 1;
         user_position = checkOutput[0].position_category;
 
@@ -148,7 +166,7 @@ router.get('/detail',async(req,res,next)=>{
 
     let clubData = {
         club_id : cluboutput[0]._id,
-        club_logo : cluboutput[0].club_log,
+        club_logo : cluboutput[0].club_logo,
         club_background : cluboutput[0].club_background,
         club_title : cluboutput[0].club_title,
         club_explanation : cluboutput[0].club_explanation

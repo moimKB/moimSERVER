@@ -11,8 +11,6 @@ let userSchema = new Schema({
     user_birth : Date,
     user_univ : String,
     user_major : String,
-    user_account : {type : String, default : "600000-00-000000"},
-    user_bank :{type : String, default : "국민은행"},
     user_deviceToken : {type : String, default : null}
 },{
     versionKey:false
