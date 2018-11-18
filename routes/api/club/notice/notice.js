@@ -131,6 +131,11 @@ router.post('/add',async(req,res,next)=>{
 
     let token = req.headers.token;
     let decoded = jwt.verify(token);
+    if(decoded === -1 || decoded ===10){
+        res.status(400).send({
+            message:"Internal Server Error"
+        })
+    }
     let resultName = await user.find({_id:decoded.id},{user_name : true})
     if(!resultName){
         res.status(500).send({

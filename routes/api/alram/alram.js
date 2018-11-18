@@ -23,6 +23,7 @@ router.get('/',async(req,res)=>{
             message:"Internal Server Error"
         })
     }
+    console.log(output)
     for(let i = 0 ; i<output.length ; i++){
 
         let Id = output[i].club_id;
