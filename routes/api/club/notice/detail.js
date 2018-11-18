@@ -31,9 +31,11 @@ router.get('/', async(req, res, next) => {
 
     let data = {
         write_time : output[0].write_time,
+        notice_place : output[0].notice_place,
         notice_title : output[0].notice_title,
         notice_cost : output[0].notice_cost,
         notice_category : output[0].notice_category,
+        notice_content : output[0].notice_content,
         notice_date : output[0].notice_date,
         notice_time : output[0].notice_time,
         club_manager : club_manager[0].club_manager,
