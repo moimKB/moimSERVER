@@ -4,7 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
-
+const formidable = require('formidable');
 const mongoose = require('./config/mongoose');
 mongoose();
 
@@ -22,6 +22,7 @@ app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 //middleware - cookie-parser
+
 
 app.use(cookieParser());
 //middleware - static
@@ -45,5 +46,6 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;

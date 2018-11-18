@@ -72,7 +72,7 @@ router.post('/',async(req,res,next)=>{
     people = Array.from( checkResult[0].notice_people
     )
         console.log(people)
-    for(let i = 0 ; people.length; i++){
+    for(let i = 0 ; i<people.length; i++){
         if(decoded.id === people[i].user_id){
             console.log(1);
             res.status(400).send({
@@ -88,7 +88,7 @@ router.post('/',async(req,res,next)=>{
     //유저 데이터를 넣기 위한 가공
     let output = await user.find({
         _id : decoded.id
-    },{user_name : true, user_deviceToken:true});
+    },{user_name : true, user_deviceToken:true,user_img : true});
 
 
     if(!output){
@@ -104,7 +104,8 @@ router.post('/',async(req,res,next)=>{
         user_id : decoded.id,
         current_time : new Date(moment().format()),
         account_check : 0,
-        user_deviceToken : output[0].user_deviceToken
+        user_deviceToken : output[0].user_deviceToken,
+        image_uri : output[0].user_img
     }
 
     //console.log(data);
@@ -123,8 +124,6 @@ router.post('/',async(req,res,next)=>{
         })}
     }
     );
-    
-    
 
 });
 

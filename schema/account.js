@@ -9,7 +9,8 @@ let accountSchema = new Schema({
     account_number : String,
     account_content : {type : String, default : null},
     to_user_id :{type : String, default : null},
-    from_user_id : String
+    from_user_id : String,
+    club_id : String
 },{
     versionKey:false
 });

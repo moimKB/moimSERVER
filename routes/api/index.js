@@ -12,6 +12,13 @@ router.use('/club',clubRouter);
 const accountRouter = require('./account/account');
 router.use('/account',accountRouter);
 
+// 재정 라우터
+const financeRouter = require('./finance/finance')
+router.use('/finance',financeRouter);
+
+//알람 라우터
+const alramRouter = require('./alram/alram')
+router.use('/alram', alramRouter)
 
 /* GET home page. */
 router.get('/', (req, res, next) => {

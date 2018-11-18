@@ -21,7 +21,7 @@ router.get('/', async(req, res, next) => {
     
     let club_manager = await club.find({
         _id : output[0].club_id
-    },{club_manager : true});
+    },{club_manager : true,club_manager_img : true});
 
     if(!club_manager){
         res.status(500).send({
@@ -37,6 +37,7 @@ router.get('/', async(req, res, next) => {
         notice_date : output[0].notice_date,
         notice_time : output[0].notice_time,
         club_manager : club_manager[0].club_manager,
+        club_manager_img : club_manager[0].club_manager_img,
         notice_participant : output[0].notice_people.length,
         notice_people :  output[0].notice_people
     }

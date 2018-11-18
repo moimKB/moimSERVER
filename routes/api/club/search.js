@@ -9,9 +9,11 @@ router.get('/',async(req,res,next)=>{
     let data = new Array;
 
     if(!output){
-        res.status(500).send()
+        res.status(500).send({
+            message: "Internal Server Error"
+        })
     }
-    //console.log(output);
+    console.log(output);
     output = output.filter((value)=>{
         if(word === ""){
             return true;
@@ -21,6 +23,7 @@ router.get('/',async(req,res,next)=>{
             }
         }
     });
+    console.log(output)
     for(let i = 0; i<output.length;i++){
         let temp={
             club_id : output[i]._id,

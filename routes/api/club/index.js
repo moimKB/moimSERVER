@@ -8,6 +8,7 @@ const crypto = require('crypto-promise');
 const user = require('../../../schema/user');
 const notice = require('../../../schema/notice');
 const account = require('../../../schema/account');
+const formidable = require('formidable');
 const account_info = require('../../../schema/account_info');
 const moment = require('moment');
 
@@ -25,11 +26,17 @@ router.use('/notice',noticeRouter);
 router.get('/', async (req, res, next) => {
     let token = req.headers.token;
     let decoded = jwt.verify(token);
+    if(decoded === -1 || decoded === 10){
+        res.status(400).send({
+            message: "token error"
+        })
+    }
     let data = new Array();
     let output;
     await position.find({
         user_id : decoded.id
     },async function( err,outputs){
+        console.log(outputs)
 
 
         
@@ -41,7 +48,8 @@ router.get('/', async (req, res, next) => {
                 });
                 return false;
             }
-            console.log(output)
+            if(output.length>0){
+                console.log(output)
             let temp = {
                 club_id : output[0]._id,
                 club_name : output[0].club_name,
@@ -51,6 +59,9 @@ router.get('/', async (req, res, next) => {
             }
             data.push(temp);
                 console.log(data)
+            }
+
+            
         }
         if(err){
             res.status(500).send({
@@ -69,21 +80,30 @@ router.get('/', async (req, res, next) => {
     });
 });
 
+
 router.post('/', upload.fields([{name : 'club_logo', maxCount : 1}, {name : 'club_background', maxCount : 1}]),
     async (req,res,next)=>{
-        
+        let form = new formidable.IncomingForm();
+        form.parse(req,function(err,fields, files){
+            console.log(files);
+            console.log(fields)
+        });
         
         let token = req.headers.token;
         let decoded = jwt.verify(token);
         let clubIdx;
         let userName;
+        let userImg;
         await user.find({ _id : decoded.id },
         async function(err,outputs){
             userName = outputs[0].user_name;
-            //console.log(outputs)
+            userImg = outputs[0].user_img;
+
+            console.log(outputs)
+            console.log(userImg)
         });
         console.log(req.files);
-        
+        console.log(req.body);
         await club.create({
             club_name : req.body.club_name,
             club_background : req.files["club_background"][0].location,
@@ -91,7 +111,8 @@ router.post('/', upload.fields([{name : 'club_logo', maxCount : 1}, {name : 'clu
             club_explanation : req.body.club_explanation,
             club_manager : userName,
             club_count : 1,
-            user_id : decoded.id
+            user_id : decoded.id,
+            club_manager_img : userImg
         },
         async function(err, outputs){
             if(err){
@@ -147,7 +168,7 @@ router.get('/detail',async(req,res,next)=>{
 
     if(checkOutput.length===0){//가입 안한 사람
         club_check = 0;
-        user_position = null;
+        user_position = 2;
     }else{//가입한 사람
         club_check = 1;
         user_position = checkOutput[0].position_category;
@@ -163,13 +184,15 @@ router.get('/detail',async(req,res,next)=>{
             message:"Internal Server Error"
         })
     }
+    console.log(cluboutput)
 
     let clubData = {
         club_id : cluboutput[0]._id,
         club_logo : cluboutput[0].club_logo,
         club_background : cluboutput[0].club_background,
         club_title : cluboutput[0].club_title,
-        club_explanation : cluboutput[0].club_explanation
+        club_explanation : cluboutput[0].club_explanation,
+        club_name : cluboutput[0].club_name
     }
 
     let noticeoutput = await notice.find({club_id : clubIdx}).sort({"write_time":1});
@@ -185,6 +208,7 @@ router.get('/detail',async(req,res,next)=>{
             notice_title : null,
             notice_content : null,
             notice_category : null,
+            write_time : null,
             notice_id : null
         }
 
@@ -193,6 +217,7 @@ router.get('/detail',async(req,res,next)=>{
             notice_title : noticeoutput[0].notice_title,
             notice_content : noticeoutput[0].notice_content,
             notice_category : noticeoutput[0].notice_category,
+            write_time : noticeoutput[0].write_time,
             notice_id : noticeoutput[0]._id
         }
 

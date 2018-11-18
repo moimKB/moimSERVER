@@ -19,8 +19,8 @@ const fcm = new FCM(serverKey);
 router.get('/', (req, res, next) => {
     res.render('index', { title: 'Express' });
 });
-router.post('/',async(req,res,next)=>{
-
+router.post('/',async(req,res)=>{
+    //let token = req.headers.token;
     let noticeIdx= req.body.notice_id;
 
     if(!noticeIdx){
@@ -65,7 +65,8 @@ router.post('/',async(req,res,next)=>{
     
     data: {  //you can send only notification or only data(or include both)
         my_key: 'my value',
-        my_another_key: 'my another value'
+        my_another_key: 'my another value',
+        result : 1
     }
     
     };
@@ -73,18 +74,15 @@ router.post('/',async(req,res,next)=>{
         if (err) {
             console.log("Something has gone wrong!");
             console.log(err);
-            res.status(400).send({
-            message:"fcm error"
-            });
-            return false;
+            
         } else {
             console.log("Successfully sent with response: ", response);
-            res.status(201).send({
-            message:"Success to send push alram",
-            data : temp
-            });
+            
         }
         });
+        res.status(201).send({
+            message:"Success to send push alram"
+            });
     }
 });
 

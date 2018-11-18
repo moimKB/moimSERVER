@@ -28,7 +28,7 @@ router.post('/account',async(req,res,next)=>{
     });
     return false;
   }
-  if(decoded === -1){
+  if(decoded === -1|| decoded === 10){
     res.status(400).send({
       message:"token error"
     });
