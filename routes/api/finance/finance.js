@@ -24,53 +24,62 @@ router.get('/info',async(req,res,next)=>{
     }
     //let clubManager = await club.find({});
     let output = await account_info.find({club_id :club_id});
-    if(!output){
-        res.status(500).send({
-            message:"Internal Server Error"
+    if(output.length<1){
+        res.status(400).send({
+            message:"계좌 미등록"
         })
-    }
-    filterId = output[0].user_id;
-
-
-    let depositResult = await account.aggregate([{'$match':{from_user_id : filterId}},{$group : {_id :club_id, totalDeposit:{$sum : "$price"}}}
-    ]);// 받은 돈
-
-    let withdrawResult = await account.aggregate([{'$match':{to_user_id : filterId}},{$group : {_id :club_id, totalWithdraw:{$sum : "$price"}}}
-    ]);// 주는 돈
-    if(!depositResult || !withdrawResult){
-        res.status(500).send({
-            message : "Internal Server Error"
+    }else{
+        if(!output){
+            res.status(500).send({
+                message:"Internal Server Error"
+            })
+        }
+        console.log(output)
+        
+    
+        let depositResult = await account.aggregate([{'$match':{from_user_id : filterId}},{$group : {_id :club_id, totalDeposit:{$sum : "$price"}}}
+        ]);// 받은 돈
+    
+        let withdrawResult = await account.aggregate([{'$match':{to_user_id : filterId}},{$group : {_id :club_id, totalWithdraw:{$sum : "$price"}}}
+        ]);// 주는 돈
+        if(!depositResult || !withdrawResult){
+            res.status(500).send({
+                message : "Internal Server Error"
+            });
+        }
+        
+        let tempDeposit;
+        let tempWithdraw;
+        let totalPrice;
+        if(depositResult.length <=0){
+            tempDeposit = 0;
+    
+        }else{
+            tempDeposit = depositResult[0].totalDeposit;
+        }
+    
+        if(withdrawResult.length <=0) {
+            tempWithdraw = 0;
+    
+        }else{
+            tempWithdraw = withdrawResult[0].totalWithdraw;
+        }
+        
+        totalPrice = tempDeposit - tempWithdraw;
+        
+        
+        let data  = {
+            account_bank : output[0].account_bank,
+            account_number: output[0].account_number,
+            price : totalPrice
+        }
+        console.log(data);
+        res.status(200).send({
+            message : "Success to show accountInfo",
+            data : data
         });
     }
-    let tempDeposit;
-    let tempWithdraw;
-    let totalPrice;
-    if(depositResult.length <=0){
-        tempDeposit = 0;
-
-    }else{
-        tempDeposit = depositResult[0].totalDeposit;
-    }
-
-    if(withdrawResult.length <=0) {
-        tempWithdraw = 0;
-
-    }else{
-        tempWithdraw = withdrawResult[0].totalWithdraw;
-    }
     
-    totalPrice = tempDeposit - tempWithdraw;
-    
-    
-    let data  = {
-        account_bank : output[0].account_bank,
-        account_number: output[0].account_number,
-        price : totalPrice
-    }
-    res.status(200).send({
-        message : "Success to show accountInfo",
-        data : data
-    });
 });
 
 router.get('/',async(req,res,next)=>{
@@ -101,7 +110,8 @@ router.get('/',async(req,res,next)=>{
     
     console.log(output)
     let image_uri;
-    for(let i = 0 ; i< output.length; i++){
+    if(output.length>0){    
+        for(let i = 0 ; i< output.length; i++){
         let temp = output[i].write_time;
         if(temp.getMonth()+1 === month && temp.getFullYear()===year){
             if(output[i].from_user_id === decode.id){//입금
@@ -122,12 +132,21 @@ router.get('/',async(req,res,next)=>{
             }
             arr.push(test);
         }
+        res.status(200).send({
+            message: "success to show account list",
+            data : arr
+        })
         
     }
+}else{
     res.status(200).send({
         message: "success to show account list",
-        data : arr
+        data : []
     })
+
+
+}
+
 
 
 });

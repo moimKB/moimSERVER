@@ -163,8 +163,10 @@ router.post('/transfer',async (req,res,next)=>{
             });
             console.log(1);
         }
-        console.log(1);
+        
+        console.log(outputs);
     });// 계좌 내역 등록
+    
     
     //송금 확인 체크
     let output12 = await notice.find({_id :noticeId});
