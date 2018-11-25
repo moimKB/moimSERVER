@@ -47,6 +47,7 @@ router.get('/',async(req,res)=>{
                     club_name : clubOutput[0].club_name,
                     club_manager : output[i].club_manager,
                     write_time : output[i].write_time,
+                    notice_id : output[i]._id,
                     notice_title : output[i].notice_title,
                     notice_content : output[i].notice_content,
                     account_check : peopleArr[a].account_check

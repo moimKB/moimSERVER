@@ -66,12 +66,12 @@ router.post('/',async(req,res,next)=>{
 
     //똑같은 사람이 또 신청했을 때 분기처리
     let checkResult = await notice.find({_id : noticeId},{notice_people : true});
-    console.log(checkResult)
+    //console.log(checkResult)
     let people = new Array;
 
     people = Array.from( checkResult[0].notice_people
     )
-        console.log(people)
+    //    console.log(people)
     for(let i = 0 ; i<people.length; i++){
         if(decoded.id === people[i].user_id){
             console.log(1);
@@ -108,22 +108,25 @@ router.post('/',async(req,res,next)=>{
         image_uri : output[0].user_img
     }
 
-    //console.log(data);
-
+    console.log(data);
+    console.log(11111)
     // 공지에 사람 추가해서 업데이트
     await notice.updateOne({_id :noticeId},
-        {$push : {notice_people:data}},
+        {$addToSet :{notice_people:data} },
     async function(err, outputs){
+        console.log(4444444)
         if(err){
             res.status(500).send({
                 message :"Internal Server Error"
             });
-        }else{
-            res.status(201).send({
-            message:"success to apply event(notice)"
-        })}
+        }
     }
     );
+
+    res.status(201).send({
+        message:"success to apply event(notice)"
+    })
+    console.log(222222)
 
 });
 

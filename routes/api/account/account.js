@@ -81,7 +81,8 @@ router.post('/',async(req,res)=>{
         }
         });
         res.status(201).send({
-            message:"Success to send push alram"
+            message:"Success to send push alram",
+            data : noticeIdx
             });
     }
 });
